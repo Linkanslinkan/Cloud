@@ -16,3 +16,15 @@ def gen_prime(x):
 			for j in xrange(i*i, x+1, i):
 				multiples.append(j)
 	return results
+
+@app.task
+def tweet_parse(ignore_result=True):
+	pronouns = ['han','hon','den','det','denna','denne','hen']
+	#LISTA ORDEN
+	print pronouns
+
+	tweet = open('tweet19','r')
+
+
+	#load tweet19.txt.
+	#Loop and read line by line, search for occurence of 
