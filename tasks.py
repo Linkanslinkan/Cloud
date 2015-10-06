@@ -1,4 +1,6 @@
 from celery import Celery
+import json
+import re
 
 app  = Celery('tasks', backend='amqp', broker='amqp://')
 
@@ -19,12 +21,44 @@ def gen_prime(x):
 
 @app.task
 def tweet_parse(ignore_result=True):
-	pronouns = ['han','hon','den','det','denna','denne','hen']
-	#LISTA ORDEN
-	print pronouns
 
-	tweet = open('tweet19','r')
+	hon = 0
+	han = 0
+	den = 0
+	det = 0
+	denna = 0
+	denne = 0
+	hen = 0
+	tweets_data = []
+	tweets_file = open('tweets_19.txt', 'r')
 
-
-	#load tweet19.txt.
-	#Loop and read line by line, search for occurence of 
+	for line in tweets_file:
+		try:
+			tweet = json.loads(line)
+			if "han" in tweet['text'].encode('utf-8'):
+				han += 1
+			elif "hon" in tweet['text'].encode('utf-8'):
+				#tweets_data.append('hon')
+				hon += 1
+			elif "den" in tweet['text'].encode('utf-8'):
+				#tweets_data.append('hon')
+				den += 1
+			elif "det" in tweet['text'].encode('utf-8'):
+				#tweets_data.append('hon')
+				det += 1
+			elif "denna" in tweet['text'].encode('utf-8'):
+				#tweets_data.append('hon')
+				denna += 1
+			elif "denne" in tweet['text'].encode('utf-8'):
+				denne += 1
+			elif "hen" in tweet['text'].encode('utf-8'):
+				hen += 1
+		except:
+ 			continue
+ 	print "{} occured {}".format("han",han)
+	print "{} occured {}".format("hon",hon)
+ 	print "{} occured {}".format("den",den)
+	print "{} occured {}".format("det",det)
+	print "{} occured {}".format("denna",denna)
+	print "{} occured {}".format("denne",denne)
+	print "{} occured {}".format("hen",hen)
