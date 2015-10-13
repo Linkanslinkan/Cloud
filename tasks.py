@@ -1,64 +1,60 @@
+import os
 from celery import Celery
+from flask import Flask
 import json
 import re
+import urllib2
+import time
 
-app  = Celery('tasks', backend='amqp', broker='amqp://')
 
-@app.task(ignore_result=True)
-def print_hello():
-	print 'helllllls'
 
-@app.task
-def gen_prime(x):
-	multiples = []
-	results = []
-	for i in xrange(2,x+1):
-		if i not in multiples:
-			results.append(i)
-			for j in xrange(i*i, x+1, i):
-				multiples.append(j)
-	return results
+app = Flask(__name__)
+celery  = Celery('tasks', backend='amqp', broker='amqp://')
 
-@app.task
-def tweet_parse(ignore_result=True):
 
-	hon = 0
-	han = 0
-	den = 0
-	det = 0
-	denna = 0
-	denne = 0
-	hen = 0
-	tweets_data = []
+@celery.task(bind=True)
+def tweet_parse(self):
+
+
+	dictionary = {'han': 0, 'hon': 0, 'den': 0, 'det':0,'denna':0 ,'denne':0,'hen':0}
 	tweets_file = open('tweets_19.txt', 'r')
-
+	
 	for line in tweets_file:
 		try:
 			tweet = json.loads(line)
-			if "han" in tweet['text'].encode('utf-8'):
-				han += 1
-			elif "hon" in tweet['text'].encode('utf-8'):
-				#tweets_data.append('hon')
-				hon += 1
-			elif "den" in tweet['text'].encode('utf-8'):
-				#tweets_data.append('hon')
-				den += 1
-			elif "det" in tweet['text'].encode('utf-8'):
-				#tweets_data.append('hon')
-				det += 1
-			elif "denna" in tweet['text'].encode('utf-8'):
-				#tweets_data.append('hon')
-				denna += 1
-			elif "denne" in tweet['text'].encode('utf-8'):
-				denne += 1
-			elif "hen" in tweet['text'].encode('utf-8'):
-				hen += 1
+			tweetArr = tweet['text'].split()
+			for word in tweetArr:
+				if "han" == word:
+					dictionary['han'] = dictionary['han'] + 1
+				elif "hon" == word:
+					dictionary['hon'] = dictionary['hon'] + 1
+				elif "den" == word:
+					dictionary['den'] = dictionary['den'] + 1
+				elif "det" == word:
+					dictionary['det'] = dictionary['det'] + 1
+				elif "denna" == word:
+					dictionary['denna'] = dictionary['denna'] + 1
+				elif "denne" == word:
+					dictionary['denne'] = dictionary['denne'] + 1 
+				elif "hen" == word:
+					dictionary['hen'] = dictionary['hen'] + 1
 		except:
  			continue
- 	print "{} occured {}".format("han",han)
-	print "{} occured {}".format("hon",hon)
- 	print "{} occured {}".format("den",den)
-	print "{} occured {}".format("det",det)
-	print "{} occured {}".format("denna",denna)
-	print "{} occured {}".format("denne",denne)
-	print "{} occured {}".format("hen",hen)
+ 	result = json.dumps(dictionary)
+ 	return result
+ 	
+
+@app.route("/linkan")
+def parse():
+	result = tweet_parse.delay()
+	while(result.ready == False):
+		pass
+	return result.get()
+
+
+
+
+if __name__ == '__main__':
+	app.run(debug=True)
+
+
