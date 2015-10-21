@@ -1,8 +1,9 @@
 import os
 from flask import Flask
 from celery import Celery
-import swiftclient.client
+import swiftclient
 import uuid
+import time
 
 config = {'user':os.environ['OS_USERNAME'], 
           'key':os.environ['OS_PASSWORD'],
@@ -23,6 +24,7 @@ config = {'username':os.environ['OS_USERNAME'],
           'project_id':os.environ['OS_TENANT_NAME'],
           'auth_url':os.environ['OS_AUTH_URL'],
            }
+           
 from novaclient.client import Client
 nc = Client('2',**config)
 
