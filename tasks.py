@@ -9,7 +9,7 @@ import time
 
 
 celery  = Celery('tasks', backend='amqp', broker='amqp://')
-
+app = Flask(__name__)
 
 @celery.task(bind=True)
 def tweet_parse(tweet_to_count):
@@ -75,6 +75,37 @@ def download(name):
 
 
 
+
+
+
+ 
+@app.route('/count')
+def count():
+	testURL = 'http://smog.uppmax.uu.se:8080/swift/v1/tweets/'
+	testFiles = os.popen('curl {}'.format(testURL)).read().rsplit('\n')
+	for filesin testFiles:
+		temp = tasks.download(files)
+		result = tweet_parse(temp).delay()
+		while (result.ready == False:
+			pass
+		return result.get()
+
+@app.route("/", methods = ['GET'])
+def starter():
+	name = 'Linkan'
+	return render_template('start.html',name=name)
+
+
+@app.route("/linkan")
+def parse():
+	result = tweet_parse.delay()
+	while(result.ready == False):
+		pass
+	return result.get()
+
+
+if __name__ == '__main__':
+	app.run(debug=True)
 
 
 
