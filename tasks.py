@@ -1,78 +1,52 @@
 import os
 from celery import Celery
 from flask import Flask
+from flask import render_template
 import json
 import re
 import urllib2
 import time
 
 
-
-
-
-app = Flask(__name__)
 celery  = Celery('tasks', backend='amqp', broker='amqp://')
 
 
-
-
 @celery.task(bind=True)
-def tweet_parse(self):
+def tweet_parse(tweet_to_count):
 
-	#LADDAR BARA HEM METADATA??
 	dictionary = {'han': 0, 'hon': 0, 'den': 0, 'det':0,'denna':0 ,'denne':0,'hen':0}
-	#tweets_file = open(tweet, 'r')
-	tweets_file = open('tweets_0.txt','r')
+	tweets_file = open(tweet_to_count,'r')
 
 	for line in tweets_file:
 		try:
 			tweet = json.loads(line)
-			tweetArr = tweet['text'].split()
-			for word in tweetArr:
-				if "han" == word:
-					dictionary['han'] = dictionary['han'] + 1
-				elif "hon" == word:
-					dictionary['hon'] = dictionary['hon'] + 1
-				elif "den" == word:
-					dictionary['den'] = dictionary['den'] + 1
-				elif "det" == word:
-					dictionary['det'] = dictionary['det'] + 1
-				elif "denna" == word:
-					dictionary['denna'] = dictionary['denna'] + 1
-				elif "denne" == word:
-					dictionary['denne'] = dictionary['denne'] + 1 
-				elif "hen" == word:
-					dictionary['hen'] = dictionary['hen'] + 1
+			if tweet['text'][:2] != 'RT'
+				tweetArr = tweet['text'].split()
+				for word in tweetArr:
+					if "han" == word:
+						dictionary['han'] = dictionary['han'] + 1
+					elif "hon" == word:
+						dictionary['hon'] = dictionary['hon'] + 1
+					elif "den" == word:
+						dictionary['den'] = dictionary['den'] + 1
+					elif "det" == word:
+						dictionary['det'] = dictionary['det'] + 1
+					elif "denna" == word:
+						dictionary['denna'] = dictionary['denna'] + 1
+					elif "denne" == word:
+						dictionary['denne'] = dictionary['denne'] + 1 
+					elif "hen" == word:
+						dictionary['hen'] = dictionary['hen'] + 1
 		except:
  			continue
  	result = json.dumps(dictionary)
- 	#print result
  	return result
- 	
-
-# || Exit when cd with paramiko
-
-@app.route("/linkan")
-def parse():
-	result = tweet_parse.delay()
-	while(result.ready == False):
-		pass
-	return result.get()
 
 
 
-@app.route('/count')
-def count():
-	testURL = 'http://smog.uppmax.uu.se:8080/swift/v1/tweets/' #skapar container!?
-	testFiles = os.popen('curl {}'.format(testURL)).read().rsplit('\n')
-	result = [downloadF(tweet) for tweet in testFiles]
-	HO = json.dumps(result)
-	return HO
 
-
-
-def downloadF(name):
-    url = 'https://smog.uppmax.uu.se/dashboard/project/containers/tweets/{}'.format(name)
+def download(name):
+    url = 'http://smog.uppmax.uu.se:8080/swift/v1/tweets/{}'.format(name)
     
     file_name = url.split('/')[-1]
     u = urllib2.urlopen(url)
@@ -95,20 +69,24 @@ def downloadF(name):
         print status,
 
 	f.close()
-	#print file_name
 	return file_name
 
 
 
-def theFile(numfile):
-	if os.path.isfile(numfile):
-		return numfile
-	else:
-		return downloadF(numfile)
 
 
 
-if __name__ == '__main__':
-	app.run(debug=True)
 
 
+
+
+
+
+# || Exit when cd with paramiko
+
+
+# def get_resource_as_string(name, charset='utf-8'):
+#     with app.open_resource(name) as f:
+#         return f.read().decode(charset)
+
+# app.jinja_env.globals['get_resource_as_string'] = get_resource_as_string
