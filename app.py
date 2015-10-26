@@ -10,9 +10,10 @@ app = Flask(__name__)
 @app.route("/", methods = ['GET'])
 def starter():
 	name = 'Linkan'
+	print "hej"
 	return render_template('start.html',name=name)
 
-@app.route('/count')
+@app.route('/count', methods=['GET'])
 def count():
 	result = tasks.count_tweets.delay()
 	while (result.ready == False):
@@ -21,4 +22,4 @@ def count():
 	
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(host='0.0.0.0',debug=True)

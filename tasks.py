@@ -8,12 +8,12 @@ import re
 import urllib2
 import time
 #import matplotlib.pyplot as plt
-from matplotlitb import pyplot as plt
+#from matplotlitb import pyplot as plt
 
 celery  = Celery('tasks', backend='amqp', broker='amqp://')
 
 
-@celery.task(ignore_result=True)
+@celery.task #ignore_result=True
 def  count_tweets():
 	count = 0
 	dictionary = {'han': 0, 'hon': 0, 'den': 0, 'det':0,'denna':0 ,'denne':0,'hen':0}
@@ -27,7 +27,7 @@ def  count_tweets():
 	    f = open(file_name,'wb')
 	    meta = u.info()
 	    file_size = int(meta.getheaders("Content-length")[0])
-	    #print "Downloading: %s Bytes: %s" % (file_name, file_size)
+	    print "Downloading: %s Bytes: %s" % (file_name, file_size)
 
 	    file_size_dl = 0
 	    block_sz = 8192
@@ -40,7 +40,7 @@ def  count_tweets():
 	        f.write(buffer)
 	        status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
 	        status = status + chr(8)*(len(status)+1)
-	        #print status,
+	        print status,
 
 	    f.close()
 	    #return file_name
