@@ -77,12 +77,9 @@ def  count_tweets():
 	    result = json.dumps(dictionary)
 	    print 'Tweets parsed: {}'.format(str(count))
 	print result
-	print dictionary
-	return result
-	plt.bar(range(len(dictionary)),dictionary.values(),align='center')
-	plt.xticks(range(len(dictionary)),dictionary.keys())
+	return dictionary
+	#return result
 
-	plt.show()
 
 #CHANGES, imported matlibplot and shows the bar
 #
