@@ -8,7 +8,7 @@ import re
 import urllib2
 import time
 import matplotlib.pyplot as plt
-from matplotlitb import pyplot as plt
+
 
 celery  = Celery('tasks', backend='amqp', broker='amqp://')
 
@@ -77,8 +77,11 @@ def  count_tweets():
 	    result = json.dumps(dictionary)
 	    print 'Tweets parsed: {}'.format(str(count))
 	print result
-	return dictionary
-	#return result
+	#return dictionary
+	plt.bar(range(len(dictionary)),dictionary.values(),align='center')
+	plt.xticks(range(len(dictionary)),dictionary.keys())
+	plt.show()
+	return result
 
 
 #CHANGES, imported matlibplot and shows the bar

@@ -18,10 +18,6 @@ def count():
 	result = tasks.count_tweets.delay()
 	while (result.ready == False):
 		pass
-	plt.bar(range(len(result)),result.values(),align='center')
-	plt.xticks(range(len(result)),result.keys())
-	plt.show()
-	
 	return result.get()
 	
 
