@@ -3,7 +3,7 @@ import tasks
 import subprocess
 import sys
 import os
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 
